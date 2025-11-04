@@ -317,7 +317,11 @@ def train_batch(config: PretrainConfig, train_state: TrainState, batch: Any, glo
 
     # To device
     batch = {k: v.to(device) for k, v in batch.items()}
-
+    # print(f"Training step {train_state.step} on device {device}")
+    # print(f"Batch keys: {list(batch.keys())}")
+    # for k, v in batch.items():
+    #     print(f"  Batch[{k}] shape: {v.shape}, dtype: {v.dtype}")
+    #     print(f"  Batch[{k}] sample data: {v.flatten()[:25]}")
     # Init carry if it is None
     if train_state.carry is None:
         with torch.device(device):
@@ -366,7 +370,7 @@ def train_batch(config: PretrainConfig, train_state: TrainState, batch: Any, glo
 
     for optim, base_lr in zip(train_state.optimizers, train_state.optimizer_lrs):
         lr_this_step = compute_lr(base_lr, config, train_state)
-        print(f'Setting optimizer lr to {lr_this_step} at step {train_state.step}')
+        # print(f'Setting optimizer lr to {lr_this_step} at step {train_state.step}')
         for param_group in optim.param_groups:
             param_group['lr'] = lr_this_step
 
@@ -426,8 +430,8 @@ def evaluate(
         
         for set_name, batch, global_batch_size in eval_loader:
             processed_batches += 1
-            if rank == 0:
-                print(f"Processing batch {processed_batches}: {set_name}")
+            # if rank == 0:
+            #     print(f"Processing batch {processed_batches}: {set_name}")
             
             # To device
             batch = {k: v.to(device) for k, v in batch.items()}
@@ -445,8 +449,8 @@ def evaluate(
                 if all_finish:
                     break
 
-            if rank == 0:
-                print(f"  Completed inference in {inference_steps} steps")
+            # if rank == 0:
+            #     print(f"  Completed inference in {inference_steps} steps")
 
             for collection in (batch, preds):
                 for k, v in collection.items():
@@ -677,15 +681,9 @@ def launch(hydra_config: DictConfig):
 
             if RANK == 0 and metrics is not None:
                 wandb.log(metrics, step=train_state.step, commit=False)
-                print(f'Logging training metrics at step {train_state.step}')
-                print(metrics)
                 # progress_bar.update(train_state.step - progress_bar.n)  # type: ignore
             if config.ema:
                 ema_helper.update(train_state.model)
-
-            for k, v in metrics.items():
-                if k.startswith("train/"):
-                    print(f"Training Metric - {k}: {v}")
 
         if _iter_id >= config.min_eval_interval:
             ############ Evaluation
@@ -709,28 +707,15 @@ def launch(hydra_config: DictConfig):
                 device=DEVICE)
 
             if RANK == 0 and metrics is not None:
-                print(f'Logging evaluation metrics at step {train_state.step}')
-                print(metrics)
-                wandb_metrics = {}
-                for key, value in metrics.items():
-                    if isinstance(value, dict):
-                        wandb_metrics[key] = {
-                            k: float(v) if hasattr(v, 'item') else v 
-                            for k, v in value.items()
-                        }
+                print(f"Eval metrics at step {train_state.step}: {metrics}")
+                flatten_metrics = {}
+                for key, val in metrics.items():
+                    if isinstance(val, dict):
+                        for sub_key, sub_val in val.items():
+                            flatten_metrics[f"eval/{sub_key}"] = sub_val
                     else:
-                        wandb_metrics[key] = float(value) if hasattr(value, 'item') else value
-                                
-                # Flatten nested dict for wandb
-                flat_metrics = {}
-                for set_name, set_metrics in wandb_metrics.items():
-                    for metric_name, metric_value in set_metrics.items():
-                        flat_metrics[f"eval/{metric_name}"] = metric_value
-                
-                print(f"Logging evaluation metrics at step {train_state.step}")
-                print(f"Metrics to log: {flat_metrics}")
-
-                wandb.log(flat_metrics, step=train_state.step, commit=True)
+                        flatten_metrics[f"eval/{key}"] = val
+                wandb.log(flatten_metrics, step=train_state.step, commit=True)
             ############ Checkpointing
             if RANK == 0:
                 print("SAVE CHECKPOINT")

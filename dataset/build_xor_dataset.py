@@ -56,11 +56,15 @@ def pad_and_flatten(inp: np.ndarray, out: np.ndarray, max_size: int):
                         constant_values=0)
     
     # Add simple EOS marker at the actual data boundary
-    if inp_h < max_size and inp_w < max_size:
-        inp_padded[inp_h, inp_w] = 1  # Single EOS marker
-    if out_h < max_size and out_w < max_size:
-        out_padded[out_h, out_w] = 1  # Single EOS marker
-    
+    # if inp_h < max_size and inp_w < max_size:
+    #     inp_padded[inp_h, inp_w] = 1  # Single EOS marker
+    # if out_h < max_size and out_w < max_size:
+    #     out_padded[out_h, out_w] = 1  # Single EOS marker
+    if inp_h < max_size:
+        inp_padded[inp_h, 0] = 1  # Position 18 for 3x3 data
+    if out_h < max_size:
+        out_padded[out_h, 0] = 1  # Position 18 for 3x3 data
+        
     return inp_padded.flatten(), out_padded.flatten()
 
 def generate_dataset(config: XORDataProcessConfig, split: str):
