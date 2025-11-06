@@ -1,3 +1,26 @@
+# About this branch
+
+This branch builds on top of the official TRM implementation and adds the following:
+- simpler setup with `uv`
+- better checkpoint saving
+- simpler problems for debugging (e.g. Sudoku 4x4)
+
+Nothing is changed in the model/architecture/training.
+
+The scripts to prepare the data and train the model remain the same. 
+
+## Example on Sudoku 4x4
+
+To prepare the data:
+
+`uv run python dataset/build_sudoku_4x4_dataset.py`
+
+To train the model: `train_sudoku4x4.sh` (this model trains in a few minutes on an A10)
+
+To evaluate the model:
+
+`uv run python evaluate.py --data-path data/sudoku4x4/ --config checkpoints/trm/messy-earwig-of-enthusiasm/all_config.yaml --checkpoint checkpoints/trm/messy-earwig-of-enthusiasm/final_step_45/model.pt`
+
 # Less is More: Recursive Reasoning with Tiny Networks
 
 This is the codebase for the paper: "Less is More: Recursive Reasoning with Tiny Networks". TRM is a recursive reasoning approach that achieves amazing scores of 45% on ARC-AGI-1 and 8% on ARC-AGI-2 using a tiny 7M parameters neural network.
