@@ -729,7 +729,7 @@ def launch(hydra_config: DictConfig):
             if RANK == 0 and metrics is not None:
                 # print(f"Eval metrics at step {train_state.step}: {metrics}")
                 flatten_metrics = {}
-                for key, val in metrics.items():
+                for key, val in eval_metrics.items():
                     if isinstance(val, dict):
                         for sub_key, sub_val in val.items():
                             flatten_metrics[f"eval/{sub_key}"] = sub_val
