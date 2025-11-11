@@ -9,6 +9,19 @@ Nothing is changed in the model/architecture/training.
 
 The scripts to prepare the data and train the model remain the same. 
 
+## Example on Rubik's cube 2x2x2
+
+To prepare the data:
+
+`uv run dataset/build_rubik2x2_dataset.py`
+
+To train the model: `train_rubik2x2.sh` (this model trains in a few minutes on an A10)
+
+To evaluate the model:
+
+`uv run python evaluate.py --data-path data/sudoku4x4/ --config checkpoints/trm/messy-earwig-of-enthusiasm/all_config.yaml --checkpoint checkpoints/trm/messy-earwig-of-enthusiasm/final_step_45/model.pt`
+
+
 ## Example on Sudoku 4x4
 
 To prepare the data:
