@@ -19,8 +19,19 @@ To train the model: `train_rubik2x2.sh` (this model trains in a few minutes on a
 
 To evaluate the model:
 
-`uv run python evaluate.py --data-path data/sudoku4x4/ --config checkpoints/trm/messy-earwig-of-enthusiasm/all_config.yaml --checkpoint checkpoints/trm/messy-earwig-of-enthusiasm/final_step_45/model.pt`
+`uv run python evaluate.py --data-path data/rubik2x2/ --config checkpoints/trm/<yours>/all_config.yaml --checkpoint checkpoints/trm/<yours>/final_step_4500/model.pt`
 
+## Example on Q&A pairs (natural language understanding task)
+
+To prepare the data:
+
+`uv run dataset/build_qa_dataset.py`
+
+To train the model: `train_qa_pairs.sh` (this model trains in a few minutes on an A10)
+
+To evaluate the model:
+
+`uv run python evaluate.py --data-path data/qa_pairs/ --config checkpoints/trm/<yours>/all_config.yaml --checkpoint checkpoints/trm/<yours>/final_step_4500/model.pt`
 
 ## Example on Sudoku 4x4
 
