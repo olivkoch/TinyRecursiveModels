@@ -1,0 +1,46 @@
+# Quick test config for MATH training
+
+defaults:
+  - arch: trm
+  - _self_
+
+hydra:
+  output_subdir: null
+
+# Data path
+data_paths: ['data/math_gsm8k_qa']
+data_paths_test: []
+
+evaluators: []
+
+# Hyperparams - Training (very short test)
+global_batch_size: 2  # Even smaller batch size
+
+epochs: 10  # Just 10 epochs for testing
+eval_interval: 5
+checkpoint_every_eval: True
+
+lr: 1e-3  # Higher learning rate for faster testing
+lr_min_ratio: 1.0
+lr_warmup_steps: 1
+
+# Standard hyperparameter settings
+beta1: 0.9
+beta2: 0.95
+weight_decay: 0.1
+puzzle_emb_weight_decay: 0.1
+
+# Hyperparams - Puzzle embeddings training
+puzzle_emb_lr: 1e-2
+
+seed: 0
+min_eval_interval: 0
+
+ema: False
+freeze_weights: False
+use_wandb: false
+
+# Project settings
+project_name: "TRM-Math-Test"
+entity: null
+run_name: null
